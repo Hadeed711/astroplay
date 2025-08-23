@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-space-dark text-white font-sans;
+  }
+  
+  * {
+    @apply box-border;
+  }
+}
+
+@layer utilities {
+  @keyframes twinkle {
+    0% { 
+      opacity: 0.3; 
+      transform: translate(-50%, -50%) scale(0.8); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translate(-50%, -50%) scale(1.2); 
+    }
+  }
+  
+  @keyframes starFadeIn {
+    0% { 
+      opacity: 0; 
+      transform: translate(-50%, -50%) scale(0); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translate(-50%, -50%) scale(1); 
+    }
+  }
+  
+  .star-twinkle {
+    animation: twinkle 2s ease-in-out infinite alternate;
+  }
+  
+  .star-fade-in {
+    animation: starFadeIn 0.3s ease-out forwards;
+  }
+
+  /* Hide scrollbars but keep scrolling functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+  }
+
+  /* Custom slider styles */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-track {
+    background: #374151;
+    height: 8px;
+    border-radius: 4px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #fbbf24;
+    border: 2px solid #1e3a8a;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+  }
+
+  input[type="range"]::-moz-range-track {
+    background: #374151;
+    height: 8px;
+    border-radius: 4px;
+    border: none;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #fbbf24;
+    border: 2px solid #1e3a8a;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+  }
+}
