@@ -9,6 +9,7 @@ import BlogsPage from './pages/BlogsPage'
 import BlogPostPage from './pages/BlogPostPage'
 import { AudioProvider } from './components/audio/AudioSystem'
 import { PerformanceDisplay } from './components/performance/PerformanceLOD'
+import ScrollToTop from './components/utils/ScrollToTop'
 
 // Simple preload function
 const preloadModels = () => {
@@ -24,6 +25,7 @@ function App() {
   return (
     <AudioProvider>
       <Router>
+        <ScrollToTop />
         <Layout>
           <Routes>
             <Route path="/" element={<ExplorePage />} />
