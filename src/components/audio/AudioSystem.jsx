@@ -225,20 +225,22 @@ export const AudioControls = () => {
   const { isEnabled, volume, setVolume, toggleAudio } = useAudio()
 
   return (
-    <div className="flex items-center space-x-3 bg-gray-800/50 rounded-lg p-3">
+    <div className="flex items-center space-x-2 bg-gray-800/70 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-lg">
       <button
         onClick={toggleAudio}
-        className="flex items-center space-x-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+        className="flex items-center space-x-1 md:space-x-2 px-2 md:px-3 py-1 md:py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
       >
-        <span className="text-2xl">
+        <span className="text-lg md:text-2xl">
           {isEnabled ? '🔊' : '🔇'}
         </span>
-        <span className="text-sm">{isEnabled ? 'Audio On' : 'Audio Off'}</span>
+        <span className="text-xs md:text-sm hidden sm:block">
+          {isEnabled ? 'Audio On' : 'Audio Off'}
+        </span>
       </button>
       
       {isEnabled && (
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-300">Volume:</span>
+        <div className="flex items-center space-x-1 md:space-x-2">
+          <span className="text-xs md:text-sm text-gray-300 hidden md:block">Vol:</span>
           <input
             type="range"
             min="0"
@@ -246,9 +248,9 @@ export const AudioControls = () => {
             step="0.1"
             value={volume}
             onChange={(e) => setVolume(parseFloat(e.target.value))}
-            className="w-20 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+            className="w-12 md:w-20 h-1 md:h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
           />
-          <span className="text-sm text-gray-300 w-8">
+          <span className="text-xs md:text-sm text-gray-300 w-6 md:w-8">
             {Math.round(volume * 100)}%
           </span>
         </div>

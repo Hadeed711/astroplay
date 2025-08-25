@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getBlogById, getRecentBlogs } from '../data/blogs'
 import MarkdownRenderer from '../components/ui/MarkdownRenderer'
+import { Mail, ExternalLink, Copy, CheckCircle, Share2, Linkedin, Facebook } from 'lucide-react'
 
 const BlogPostPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [copied, setCopied] = useState(false)
+  
   const blog = getBlogById(id)
   const recentBlogs = getRecentBlogs(3).filter(b => b.id !== id)
 
@@ -35,9 +38,126 @@ const BlogPostPage = () => {
     })
   }
 
+  // Share functionality
+  const handleCopyContent = async () => {
+    try {
+      const { description, points } = createRichDescription()
+      
+      const blogContent = `🚀 ${blog.title}
+
+By ${blog.author} | Published: ${formatDate(blog.date)}
+Category: ${blog.category} | Read time: ${blog.readTime}
+
+${description}
+
+Key Points:
+${points.join('\n')}
+
+Tags: ${blog.tags.join(', ')}
+
+Read the full article at: ${window.location.href}
+
+---
+Explore more space science at AstroPlay! 🌌`
+
+      await navigator.clipboard.writeText(blogContent)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy content:', err)
+    }
+  }
+
+  const createRichDescription = () => {
+    // Extract first few sentences for description
+    const sentences = blog.content.split('.').filter(s => s.trim().length > 20)
+    const description = sentences.slice(0, 2).join('.') + '.'
+    
+    // Create key points from content
+    const points = []
+    const lines = blog.content.split('\n').filter(line => line.trim())
+    
+    // Look for bullet points or numbered lists in content
+    const listItems = lines.filter(line => 
+      line.trim().startsWith('•') || 
+      line.trim().startsWith('-') || 
+      line.trim().match(/^\d+\./)
+    )
+    
+    if (listItems.length > 0) {
+      points.push(...listItems.slice(0, 3))
+    } else {
+      // If no lists, create points from paragraphs
+      const paragraphs = blog.content.split('\n\n').filter(p => p.trim().length > 50)
+      paragraphs.slice(0, 3).forEach((para, index) => {
+        const sentence = para.split('.')[0] + '.'
+        if (sentence.length > 20 && sentence.length < 150) {
+          points.push(`• ${sentence}`)
+        }
+      })
+    }
+
+    return {
+      description,
+      points: points.slice(0, 3)
+    }
+  }
+
+  const handleLinkedInShare = () => {
+    const url = encodeURIComponent(window.location.href)
+    const title = encodeURIComponent(blog.title)
+    
+    const { description, points } = createRichDescription()
+    
+    // Create rich content for LinkedIn
+    const richContent = `🚀 ${blog.title}
+
+📝 ${description}
+
+💡 Key insights:
+${points.join('\n')}
+
+🏷️ ${blog.tags.join(' • ')}
+⏰ ${blog.readTime}
+👤 ${blog.author}
+
+Dive deeper into space science with AstroPlay! 🌌
+
+#SpaceExploration #Science #AstroPlay ${blog.category === 'Climate Science' ? '#ClimateScience #Environment' : '#SpaceNews #Astronomy'}`
+
+    const summary = encodeURIComponent(richContent)
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}&summary=${summary}`
+    window.open(linkedInUrl, '_blank', 'width=600,height=400')
+  }
+
+  const handleFacebookShare = () => {
+    const url = encodeURIComponent(window.location.href)
+    
+    const { description, points } = createRichDescription()
+    
+    // Create rich content for Facebook
+    const richContent = `🌌 ${blog.title}
+
+📖 ${description}
+
+✨ Key highlights:
+${points.join('\n')}
+
+📅 ${formatDate(blog.date)} • 👤 ${blog.author} • ⏱️ ${blog.readTime}
+
+Discover amazing space science discoveries! 🚀✨
+
+${blog.category === 'Space News' ? '#SpaceNews #Astronomy #Universe' : '#ClimateScience #Environment #Earth'} #Science #Education #AstroPlay`
+
+    // For Facebook, we'll use the quote parameter to include rich content
+    const quote = encodeURIComponent(richContent)
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${quote}`
+    window.open(facebookUrl, '_blank', 'width=600,height=400')
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Back Button */}
         <button
           onClick={() => navigate('/blogs')}
@@ -95,24 +215,52 @@ const BlogPostPage = () => {
 
             {/* Share Section */}
             <div className="mt-12 pt-8 border-t border-slate-700">
-              <h3 className="text-xl font-bold mb-4">Share this article</h3>
-              <div className="flex gap-4">
-                <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
-                  Share on Twitter
+              <div className="flex items-center gap-2 mb-4">
+                <Share2 size={20} />
+                <h3 className="text-xl font-bold">Share this article</h3>
+              </div>
+              <div className="flex flex-wrap gap-2 md:gap-3">
+                <button 
+                  onClick={handleLinkedInShare}
+                  className="inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-blue-700 hover:bg-blue-800 rounded-lg transition-colors text-sm"
+                >
+                  <Linkedin size={16} />
+                  <span className="hidden sm:inline">LinkedIn</span>
+                  <span className="sm:hidden">LI</span>
                 </button>
-                <button className="px-4 py-2 bg-blue-800 hover:bg-blue-900 rounded-lg transition-colors">
-                  Share on Facebook
+                <button 
+                  onClick={handleFacebookShare}
+                  className="inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-sm"
+                >
+                  <Facebook size={16} />
+                  <span className="hidden sm:inline">Facebook</span>
+                  <span className="sm:hidden">FB</span>
                 </button>
-                <button className="px-4 py-2 bg-slate-600 hover:bg-slate-700 rounded-lg transition-colors">
-                  Copy Link
+                <button 
+                  onClick={handleCopyContent}
+                  className="inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-slate-600 hover:bg-slate-700 rounded-lg transition-colors text-sm"
+                >
+                  {copied ? (
+                    <>
+                      <CheckCircle size={16} className="text-green-400" />
+                      <span className="hidden sm:inline">Copied!</span>
+                      <span className="sm:hidden">✓</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={16} />
+                      <span className="hidden sm:inline">Copy Content</span>
+                      <span className="sm:hidden">Copy</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
           </article>
 
           {/* Sidebar */}
-          <aside className="lg:col-span-1">
-            <div className="sticky top-8 space-y-8">
+          <aside className="lg:col-span-1 mt-8 lg:mt-0">
+            <div className="lg:sticky lg:top-8 space-y-6 md:space-y-8">
               {/* Recent Posts */}
               {recentBlogs.length > 0 && (
                 <div className="bg-slate-800 rounded-xl p-6">
@@ -136,15 +284,23 @@ const BlogPostPage = () => {
                 </div>
               )}
 
-              {/* Newsletter Signup */}
+              {/* Contact Section */}
               <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl p-6">
-                <h3 className="text-xl font-bold mb-3">Stay Updated</h3>
-                <p className="text-blue-100 text-sm mb-4">
-                  Get the latest space and climate science updates
-                </p>
-                <button className="w-full px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors">
-                  Subscribe
-                </button>
+                <div className="text-center">
+                  <Mail className="mx-auto mb-3 text-white" size={32} />
+                  <h3 className="text-lg font-bold mb-2">Get in Touch</h3>
+                  <p className="text-blue-100 text-sm mb-4">
+                    Questions about this article?
+                  </p>
+                  <a 
+                    href="mailto:hadeedahmad711@gmail.com" 
+                    className="inline-flex items-center gap-2 w-full px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors group justify-center"
+                  >
+                    <Mail size={16} />
+                    Contact Me
+                    <ExternalLink size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                  </a>
+                </div>
               </div>
 
               {/* Explore More */}

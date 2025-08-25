@@ -43,7 +43,7 @@ const Layout = ({ children }) => {
           {children}
           
           {/* Audio Controls */}
-          <div className="fixed top-20 right-4 z-40">
+          <div className="fixed top-16 md:top-20 right-2 md:right-4 z-40">
             <AudioControls />
           </div>
           
