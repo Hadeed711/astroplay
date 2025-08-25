@@ -29,11 +29,12 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-4">
+          <Link to="/" className="flex items-center space-x-4 hover:opacity-80 transition-opacity relative">
             <img
               src="/AstroPlay Logo.png"
               alt="AstroPlay Logo"
-              className="h-10 md:h-16 w-auto max-w-none"
+              className="h-20 md:h-24 lg:h-28 w-auto max-w-none filter drop-shadow-lg relative z-10"
+              style={{ marginTop: '-8px', marginBottom: '-8px' }}
             />
           </Link>
 
