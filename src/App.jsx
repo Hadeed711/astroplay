@@ -7,6 +7,7 @@ import QuizDashboard from './pages/QuizDashboard'
 import DefinitionsPage from './pages/DefinitionsPage'
 import BlogsPage from './pages/BlogsPage'
 import BlogPostPage from './pages/BlogPostPage'
+import DataVisualizationPage from './pages/DataVisualizationPage'
 import { AudioProvider } from './components/audio/AudioSystem'
 import { PerformanceDisplay } from './components/performance/PerformanceLOD'
 import ScrollToTop from './components/utils/ScrollToTop'
@@ -35,6 +36,7 @@ function App() {
             <Route path="/definitions" element={<DefinitionsPage />} />
             <Route path="/blogs" element={<BlogsPage />} />
             <Route path="/blog/:id" element={<BlogPostPage />} />
+            <Route path="/data-viz" element={<DataVisualizationPage />} />
           </Routes>
           {/* Performance Monitor */}
           <PerformanceDisplay />
