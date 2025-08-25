@@ -1,5 +1,6 @@
 import React, { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { Text } from '@react-three/drei'
 import * as THREE from 'three'
 
 const Model3D = ({ object, showAtmosphere = true }) => {
@@ -65,6 +66,19 @@ const Model3D = ({ object, showAtmosphere = true }) => {
           />
         )}
       </mesh>
+
+      {/* Planet/Object Name Label */}
+      <Text
+        position={[0, -size - 0.8, 0]}
+        fontSize={0.3}
+        color="black"
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={0.02}
+        outlineColor="white"
+      >
+        {safeObject.name || 'Unknown'}
+      </Text>
       
       {/* Atmosphere for planets */}
       {showAtmosphere && objectType === 'planet' && objectKey !== 'moon' && (

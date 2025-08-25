@@ -1,4 +1,19 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
+import { 
+  Compass, 
+  Brain, 
+  BarChart3, 
+  TrendingUp, 
+  BookOpen, 
+  FileText,
+  Rocket,
+  BookIcon,
+  Satellite,
+  Globe,
+  Telescope,
+  ExternalLink
+} from 'lucide-react'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -38,16 +53,16 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                <span className="text-xs">☀️</span>
+                <span className="text-xs text-yellow-900">☀</span>
               </div>
               <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center">
-                <span className="text-xs">🌍</span>
+                <Globe size={12} className="text-white" />
               </div>
               <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
-                <span className="text-xs">🌙</span>
+                <span className="text-xs text-gray-200">🌙</span>
               </div>
               <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center">
-                <span className="text-xs">♂️</span>
+                <span className="text-xs text-red-200">♂</span>
               </div>
             </div>
           </div>
@@ -55,21 +70,53 @@ const Footer = () => {
           {/* Quick Links */}
           <div>
             <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <span className="mr-2">🚀</span>
+              <Rocket className="mr-2" size={18} />
               Quick Links
             </h4>
             <ul className="space-y-2">
-              <li><a href="#explore" className="text-gray-300 hover:text-blue-400 transition-colors duration-200">Explore</a></li>
-              <li><a href="#quiz" className="text-gray-300 hover:text-blue-400 transition-colors duration-200">Quiz</a></li>
-              <li><a href="#dashboard" className="text-gray-300 hover:text-blue-400 transition-colors duration-200">Dashboard</a></li>
-              <li><a href="#about" className="text-gray-300 hover:text-blue-400 transition-colors duration-200">About</a></li>
+              <li>
+                <Link to="/explore" className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center">
+                  <Compass size={14} className="mr-2" />
+                  Explore
+                </Link>
+              </li>
+              <li>
+                <Link to="/quiz" className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center">
+                  <Brain size={14} className="mr-2" />
+                  Quiz
+                </Link>
+              </li>
+              <li>
+                <Link to="/quiz-dashboard" className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center">
+                  <BarChart3 size={14} className="mr-2" />
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to="/data-viz" className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center">
+                  <TrendingUp size={14} className="mr-2" />
+                  Data Visualization
+                </Link>
+              </li>
+              <li>
+                <Link to="/definitions" className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center">
+                  <BookOpen size={14} className="mr-2" />
+                  Definitions
+                </Link>
+              </li>
+              <li>
+                <Link to="/blogs" className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center">
+                  <FileText size={14} className="mr-2" />
+                  Blogs
+                </Link>
+              </li>
             </ul>
           </div>
           
           {/* Resources & Credits */}
           <div>
             <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <span className="mr-2">📚</span>
+              <BookIcon className="mr-2" size={18} />
               Resources
             </h4>
             <ul className="space-y-2">
@@ -80,7 +127,9 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
-                  <span className="mr-1">🛰️</span>NASA
+                  <Satellite size={14} className="mr-2" />
+                  NASA
+                  <ExternalLink size={12} className="ml-1" />
                 </a>
               </li>
               <li>
@@ -90,7 +139,9 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
-                  <span className="mr-1">🇪🇺</span>ESA
+                  <Globe size={14} className="mr-2" />
+                  ESA
+                  <ExternalLink size={12} className="ml-1" />
                 </a>
               </li>
               <li>
@@ -100,7 +151,9 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
-                  <span className="mr-1">📖</span>ArXiv Astrophysics
+                  <BookOpen size={14} className="mr-2" />
+                  ArXiv Astrophysics
+                  <ExternalLink size={12} className="ml-1" />
                 </a>
               </li>
               <li>
@@ -110,7 +163,9 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
-                  <span className="mr-1">🔭</span>Event Horizon Telescope
+                  <Telescope size={14} className="mr-2" />
+                  Event Horizon Telescope
+                  <ExternalLink size={12} className="ml-1" />
                 </a>
               </li>
             </ul>
