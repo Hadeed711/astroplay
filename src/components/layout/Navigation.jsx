@@ -19,10 +19,19 @@ const Navigation = () => {
     { path: "/explore", label: "Explore", icon: Compass },
     { path: "/quiz", label: "Quiz", icon: Brain },
     { path: "/quiz-dashboard", label: "Dashboard", icon: BarChart3 },
-    { path: "/data-viz", label: "Data Viz", icon: TrendingUp },
     { path: "/definitions", label: "Definitions", icon: BookOpen },
     { path: "/blogs", label: "Blogs", icon: FileText },
+    { path: "/data-viz", label: "Data Viz", icon: TrendingUp },
   ];
+
+  // Function to check if a nav item should be highlighted
+  const isActive = (itemPath) => {
+    if (itemPath === "/explore") {
+      // Highlight Explore for both "/" and "/explore" paths
+      return location.pathname === "/" || location.pathname === "/explore";
+    }
+    return location.pathname === itemPath;
+  };
 
   return (
     <nav className="bg-space-dark/90 backdrop-blur-sm border-b border-space-blue/20 sticky top-0 z-50">
@@ -47,7 +56,7 @@ const Navigation = () => {
                   key={item.path}
                   to={item.path}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    location.pathname === item.path
+                    isActive(item.path)
                       ? "bg-space-blue text-white"
                       : "text-gray-300 hover:text-white hover:bg-space-blue/50"
                   }`}
@@ -85,7 +94,7 @@ const Navigation = () => {
                     to={item.path}
                     onClick={() => setIsMenuOpen(false)}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                      location.pathname === item.path
+                      isActive(item.path)
                         ? "bg-space-blue text-white"
                         : "text-gray-300 hover:text-white hover:bg-space-blue/50"
                     }`}

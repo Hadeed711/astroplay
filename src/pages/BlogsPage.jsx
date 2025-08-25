@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAllBlogs, getBlogsByCategory } from '../data/blogs'
+import { Mail, ExternalLink } from 'lucide-react'
 
 const BlogsPage = () => {
   const navigate = useNavigate()
@@ -120,16 +121,31 @@ const BlogsPage = () => {
           </div>
         )}
 
-        {/* Call to Action */}
-        <div className="mt-16 text-center">
+        {/* Contact Section */}
+        <div className="mt-16">
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8">
-            <h3 className="text-2xl font-heading font-bold mb-4 tracking-tight">Stay Updated</h3>
-            <p className="text-blue-100 mb-6">
-              Get the latest space news and climate science updates delivered to your inbox
-            </p>
-            <button className="px-8 py-3 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors">
-              Subscribe to Newsletter
-            </button>
+            <div className="max-w-2xl mx-auto text-center">
+              <Mail className="mx-auto mb-4 text-white" size={48} />
+              <h3 className="text-2xl font-heading font-bold mb-4 tracking-tight text-white">Get in Touch</h3>
+              <p className="text-blue-100 mb-6">
+                Have questions about space exploration or want to share your thoughts? 
+              </p>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                <p className="text-blue-100 mb-4">Contact me directly via email:</p>
+                <a 
+                  href="mailto:hadeedahmad711@gmail.com" 
+                  className="inline-flex items-center px-6 py-3 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors group"
+                >
+                  <Mail className="mr-2 group-hover:scale-110 transition-transform" size={20} />
+                  hadeedahmad711@gmail.com
+                  <ExternalLink className="ml-2 group-hover:translate-x-1 transition-transform" size={16} />
+                </a>
+                <p className="text-blue-200 text-sm mt-4">
+                  Click to open your email client or copy the address
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
