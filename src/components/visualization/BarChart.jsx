@@ -94,8 +94,8 @@ const BarChart = ({
       g.appendChild(text)
     })
 
-    // Y-axis labels
-    const yTicks = 5
+    // Y-axis labels (reduced from 5 to 3 ticks)
+    const yTicks = 3
     for (let i = 0; i <= yTicks; i++) {
       const value = (maxY / yTicks) * i
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
@@ -115,7 +115,7 @@ const BarChart = ({
         gridLine.setAttribute('y2', yScale(value))
         gridLine.setAttribute('stroke', '#374151')
         gridLine.setAttribute('stroke-dasharray', '2,2')
-        gridLine.setAttribute('opacity', '0.5')
+        gridLine.setAttribute('opacity', '0.3')
         g.appendChild(gridLine)
       }
     }

@@ -10,71 +10,72 @@ const ExoplanetCharts = ({ data }) => {
   const chartData = useMemo(() => {
     if (!data || data.length === 0) return {}
 
-    // 1. Planet Radius Distribution
-    const radiusRanges = [
-      { range: '0-1 R⊕', min: 0, max: 1, color: '#22c55e' },
-      { range: '1-2 R⊕', min: 1, max: 2, color: '#3b82f6' },
-      { range: '2-4 R⊕', min: 2, max: 4, color: '#f59e0b' },
-      { range: '4-8 R⊕', min: 4, max: 8, color: '#ef4444' },
-      { range: '8+ R⊕', min: 8, max: Infinity, color: '#8b5cf6' }
+    // Use faster processing with pre-defined ranges
+    const radiusDistribution = [
+      { range: '0-1 R⊕', count: 0, color: '#22c55e' },
+      { range: '1-2 R⊕', count: 0, color: '#3b82f6' },
+      { range: '2-4 R⊕', count: 0, color: '#f59e0b' },
+      { range: '4-8 R⊕', count: 0, color: '#ef4444' },
+      { range: '8+ R⊕', count: 0, color: '#8b5cf6' }
     ]
 
-    const radiusDistribution = radiusRanges.map(range => ({
-      ...range,
-      count: data.filter(planet => 
-        planet.pl_rade >= range.min && planet.pl_rade < range.max
-      ).length
-    }))
-
-    // 2. Distance vs Mass scatter plot
-    const distanceMassData = data
-      .filter(planet => planet.sy_dist && planet.pl_masse)
-      .map(planet => ({
-        x: planet.sy_dist,
-        y: planet.pl_masse,
-        name: planet.pl_name,
-        type: planet.pl_type || 'Unknown',
-        temperature: planet.pl_eqt
-      }))
-
-    // 3. Discovery method distribution
+    // Single pass through data for all calculations
+    const distanceMassData = []
+    const tempRadiusData = []
     const methodCounts = {}
+    const yearCounts = {}
+
     data.forEach(planet => {
+      // Radius distribution
+      const radius = planet.pl_rade
+      if (radius < 1) radiusDistribution[0].count++
+      else if (radius < 2) radiusDistribution[1].count++
+      else if (radius < 4) radiusDistribution[2].count++
+      else if (radius < 8) radiusDistribution[3].count++
+      else radiusDistribution[4].count++
+
+      // Distance vs Mass (filter once)
+      if (planet.sy_dist && planet.pl_masse) {
+        distanceMassData.push({
+          x: planet.sy_dist,
+          y: planet.pl_masse,
+          name: planet.pl_name,
+          type: planet.pl_type || 'Unknown'
+        })
+      }
+
+      // Temperature vs Radius (filter once)
+      if (planet.pl_eqt && planet.pl_rade) {
+        tempRadiusData.push({
+          x: planet.pl_eqt,
+          y: planet.pl_rade,
+          name: planet.pl_name,
+          type: planet.pl_type || 'Unknown'
+        })
+      }
+
+      // Method counts
       const method = planet.discoverymethod || 'Unknown'
       methodCounts[method] = (methodCounts[method] || 0) + 1
+
+      // Year counts
+      if (planet.disc_year) {
+        yearCounts[planet.disc_year] = (yearCounts[planet.disc_year] || 0) + 1
+      }
     })
 
+    // Convert to final format
     const discoveryMethods = Object.entries(methodCounts).map(([method, count]) => ({
       method,
       count,
       color: {
         'Transit': '#3b82f6',
-        'Radial Velocity': '#22c55e', 
+        'Radial Velocity': '#22c55e',
         'Direct Imaging': '#f59e0b',
         'Gravitational Microlensing': '#ef4444',
         'Unknown': '#6b7280'
       }[method] || '#6b7280'
     }))
-
-    // 4. Temperature vs Radius
-    const tempRadiusData = data
-      .filter(planet => planet.pl_eqt && planet.pl_rade)
-      .map(planet => ({
-        x: planet.pl_eqt,
-        y: planet.pl_rade,
-        name: planet.pl_name,
-        distance: planet.sy_dist,
-        type: planet.pl_type || 'Unknown'
-      }))
-
-    // 5. Discovery timeline
-    const yearCounts = {}
-    data.forEach(planet => {
-      const year = planet.disc_year
-      if (year) {
-        yearCounts[year] = (yearCounts[year] || 0) + 1
-      }
-    })
 
     const discoveryTimeline = Object.entries(yearCounts)
       .map(([year, count]) => ({ year: parseInt(year), count }))

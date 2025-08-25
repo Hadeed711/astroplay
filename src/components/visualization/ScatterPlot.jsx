@@ -55,8 +55,8 @@ const ScatterPlot = ({
     const xScale = (value) => ((value - xExtent[0]) / (xExtent[1] - xExtent[0])) * width
     const yScale = (value) => height - ((value - yExtent[0]) / (yExtent[1] - yExtent[0])) * height
 
-    // Grid lines
-    const gridLines = 5
+    // Grid lines (reduced from 5 to 3)
+    const gridLines = 3
     for (let i = 0; i <= gridLines; i++) {
       // Vertical grid lines
       const x = (i / gridLines) * width
@@ -66,8 +66,8 @@ const ScatterPlot = ({
       vLine.setAttribute('x2', x)
       vLine.setAttribute('y2', height)
       vLine.setAttribute('stroke', '#374151')
-      vLine.setAttribute('stroke-dasharray', '2,2')
-      vLine.setAttribute('opacity', '0.3')
+      vLine.setAttribute('stroke-dasharray', '3,3')
+      vLine.setAttribute('opacity', '0.2')
       g.appendChild(vLine)
 
       // Horizontal grid lines
@@ -78,8 +78,8 @@ const ScatterPlot = ({
       hLine.setAttribute('x2', width)
       hLine.setAttribute('y2', y)
       hLine.setAttribute('stroke', '#374151')
-      hLine.setAttribute('stroke-dasharray', '2,2')
-      hLine.setAttribute('opacity', '0.3')
+      hLine.setAttribute('stroke-dasharray', '3,3')
+      hLine.setAttribute('opacity', '0.2')
       g.appendChild(hLine)
     }
 

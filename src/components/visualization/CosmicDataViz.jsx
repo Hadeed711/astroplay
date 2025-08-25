@@ -21,21 +21,15 @@ const CosmicDataViz = () => {
       setLoading(true)
       setError(null)
       
-      // Due to CORS restrictions, we'll use a proxy or fetch a subset of data
-      // For development, let's create some realistic sample data based on NASA patterns
-      const response = await fetch(NASA_EXOPLANET_API)
+      // Use a small delay to show loading state briefly, then load sample data
+      setTimeout(() => {
+        setExoplanetData(generateSampleExoplanetData())
+        setLoading(false)
+      }, 500) // Just 0.5 seconds
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch NASA data, using sample dataset')
-      }
-      
-      const data = await response.json()
-      setExoplanetData(data)
     } catch (err) {
-      console.warn('Using sample exoplanet data:', err.message)
-      // Fallback to realistic sample data
+      console.warn('Loading sample data:', err.message)
       setExoplanetData(generateSampleExoplanetData())
-    } finally {
       setLoading(false)
     }
   }
@@ -44,63 +38,29 @@ const CosmicDataViz = () => {
   const generateSampleExoplanetData = () => {
     const sampleData = []
     const planetTypes = ['Super Earth', 'Neptune-like', 'Gas Giant', 'Terrestrial', 'Hot Jupiter']
-    const hostStars = ['Kepler-452', 'TRAPPIST-1', 'Proxima Centauri', 'TOI-715', 'K2-18', 'HD 209458', 'WASP-121']
+    const hostStars = ['Kepler-452', 'TRAPPIST-1', 'Proxima Centauri', 'TOI-715', 'K2-18']
     
-    for (let i = 0; i < 100; i++) {
+    // Reduced from 100 to 50 for faster loading
+    for (let i = 0; i < 50; i++) {
       const planetType = planetTypes[Math.floor(Math.random() * planetTypes.length)]
       const hostStar = hostStars[Math.floor(Math.random() * hostStars.length)]
       
-      // Realistic distributions based on actual exoplanet data
-      let radius, mass, distance, temperature
-      
-      switch (planetType) {
-        case 'Terrestrial':
-          radius = 0.5 + Math.random() * 1.5 // 0.5-2 Earth radii
-          mass = radius ** 2.06 // Mass-radius relationship
-          distance = 50 + Math.random() * 200 // parsecs
-          temperature = 200 + Math.random() * 400
-          break
-        case 'Super Earth':
-          radius = 1.5 + Math.random() * 2 // 1.5-3.5 Earth radii
-          mass = radius ** 2.06
-          distance = 30 + Math.random() * 300
-          temperature = 150 + Math.random() * 500
-          break
-        case 'Neptune-like':
-          radius = 3 + Math.random() * 2 // 3-5 Earth radii
-          mass = radius ** 1.6
-          distance = 100 + Math.random() * 500
-          temperature = 50 + Math.random() * 200
-          break
-        case 'Gas Giant':
-          radius = 8 + Math.random() * 12 // 8-20 Earth radii
-          mass = radius ** 1.3
-          distance = 200 + Math.random() * 1000
-          temperature = 50 + Math.random() * 300
-          break
-        case 'Hot Jupiter':
-          radius = 10 + Math.random() * 5 // 10-15 Earth radii
-          mass = radius ** 1.2
-          distance = 50 + Math.random() * 800
-          temperature = 800 + Math.random() * 1500
-          break
-        default:
-          radius = 1 + Math.random() * 10
-          mass = radius ** 1.8
-          distance = 50 + Math.random() * 500
-          temperature = 100 + Math.random() * 1000
-      }
+      // Pre-calculate values to avoid complex math in render
+      const baseRadius = 0.5 + Math.random() * 10
+      const baseMass = Math.pow(baseRadius, 1.8)
+      const baseDistance = 50 + Math.random() * 500
+      const baseTemp = 100 + Math.random() * 1000
       
       sampleData.push({
         pl_name: `${hostStar} ${String.fromCharCode(97 + (i % 26))}`,
         hostname: hostStar,
-        pl_rade: parseFloat(radius.toFixed(2)), // Planet radius in Earth radii
-        pl_masse: parseFloat(mass.toFixed(2)), // Planet mass in Earth masses
-        sy_dist: parseFloat(distance.toFixed(1)), // Distance in parsecs
-        pl_eqt: parseFloat(temperature.toFixed(0)), // Equilibrium temperature in K
+        pl_rade: parseFloat(baseRadius.toFixed(2)),
+        pl_masse: parseFloat(baseMass.toFixed(2)),
+        sy_dist: parseFloat(baseDistance.toFixed(1)),
+        pl_eqt: parseFloat(baseTemp.toFixed(0)),
         discoverymethod: ['Transit', 'Radial Velocity', 'Direct Imaging', 'Gravitational Microlensing'][Math.floor(Math.random() * 4)],
-        disc_year: 2009 + Math.floor(Math.random() * 15), // Discovery year 2009-2024
-        pl_orbper: parseFloat((Math.random() * 1000).toFixed(2)), // Orbital period in days
+        disc_year: 2015 + Math.floor(Math.random() * 10), // Reduced range
+        pl_orbper: parseFloat((Math.random() * 1000).toFixed(2)),
         pl_type: planetType
       })
     }
