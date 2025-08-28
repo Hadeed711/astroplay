@@ -1,14 +1,26 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
-import UserLeaderboard from '../components/quiz/UserLeaderboard'
+import QuizStats from '../components/quiz/QuizStats'
+import PersonalizedFeedback from '../components/quiz/PersonalizedFeedback'
+import DailyChallenge from '../components/quiz/DailyChallenge'
 import UserSetup from '../components/quiz/UserSetup'
 import { quizModes } from '../data/quizQuestions'
 
 const QuizDashboard = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, isUserSetup } = useAppStore()
   const [activeTab, setActiveTab] = useState('overview')
+
+  // Handle URL parameters for direct navigation to tabs
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search)
+    const tab = searchParams.get('tab')
+    if (tab && ['overview', 'rewards'].includes(tab)) {
+      setActiveTab(tab)
+    }
+  }, [location.search])
 
   // Show user setup if not completed
   if (!isUserSetup || !user) {
@@ -71,7 +83,7 @@ const QuizDashboard = () => {
 
   const tabs = [
     { key: 'overview', label: 'Overview', icon: '📊' },
-    { key: 'attempts', label: 'My Attempts', icon: '🏆' }
+    { key: 'rewards', label: 'Daily Rewards', icon: '�' }
   ]
 
   return (
@@ -229,7 +241,7 @@ const QuizDashboard = () => {
           </div>
         )}
 
-        {activeTab === 'attempts' && <UserLeaderboard />}
+        {activeTab === 'rewards' && <DailyChallenge />}
       </div>
     </div>
   )

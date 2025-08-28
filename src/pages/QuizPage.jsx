@@ -4,6 +4,7 @@ import { generateQuizQuestions, quizModes } from '../data/quizQuestions'
 import { useAppStore } from '../store/useAppStore'
 import PersonalizedFeedback from '../components/quiz/PersonalizedFeedback'
 import UserSetup from '../components/quiz/UserSetup'
+import RewardNotification from '../components/quiz/RewardNotification'
 
 const QuizPage = () => {
   const navigate = useNavigate()
@@ -22,6 +23,7 @@ const QuizPage = () => {
   const [showHint, setShowHint] = useState(false)
   const [questionStartTime, setQuestionStartTime] = useState(Date.now())
   const [showFeedback, setShowFeedback] = useState(false)
+  const [showRewardNotification, setShowRewardNotification] = useState(false)
 
   // Timer effect
   useEffect(() => {
@@ -147,6 +149,11 @@ const QuizPage = () => {
     }
     
     updateUserProgress('quiz', quizResult)
+    
+    // Show reward notification after a brief delay
+    setTimeout(() => {
+      setShowRewardNotification(true)
+    }, 2000)
   }
 
   const formatTime = (seconds) => {
@@ -347,6 +354,12 @@ const QuizPage = () => {
               Back to Home
             </button>
             <button
+              onClick={() => navigate('/quiz-dashboard?tab=rewards')}
+              className="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 rounded-lg transition-colors"
+            >
+              🌌 View Rewards
+            </button>
+            <button
               onClick={() => setShowFeedback(true)}
               className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
             >
@@ -502,6 +515,15 @@ const QuizPage = () => {
           )}
         </div>
       </div>
+      
+      {/* Reward Notification */}
+      {showRewardNotification && (
+        <RewardNotification
+          onClose={() => setShowRewardNotification(false)}
+          score={score}
+          percentage={Math.round((userAnswers.filter(a => a.correct).length / questions.length) * 100)}
+        />
+      )}
     </div>
   )
 }
