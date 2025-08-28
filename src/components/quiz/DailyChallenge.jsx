@@ -57,25 +57,10 @@ const DailyChallenge = () => {
     }
   ]
 
-  // Get daily fact based on date
-  const getDailyFact = () => {
-    const today = new Date().toDateString()
-    const storedDate = localStorage.getItem('dailyFactDate')
-    const storedFact = localStorage.getItem('dailyFact')
-
-    if (storedDate === today && storedFact) {
-      return JSON.parse(storedFact)
-    }
-
-    // Get a new fact based on today's date
-    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24)
-    const factIndex = dayOfYear % funFacts.length
-    const todaysFact = funFacts[factIndex]
-
-    localStorage.setItem('dailyFactDate', today)
-    localStorage.setItem('dailyFact', JSON.stringify(todaysFact))
-
-    return todaysFact
+  // Get random fact for each quiz attempt
+  const getRandomFact = () => {
+    const randomIndex = Math.floor(Math.random() * funFacts.length)
+    return funFacts[randomIndex]
   }
 
   // Fetch NASA's Astronomy Picture of the Day
@@ -107,23 +92,18 @@ const DailyChallenge = () => {
   }
 
   useEffect(() => {
-    setFunFact(getDailyFact())
+    setFunFact(getRandomFact())
     if (activeTab === 'images') {
       fetchSpaceImage()
     }
   }, [activeTab])
 
-  // Check if user has completed a quiz today
-  const hasCompletedQuizToday = () => {
-    if (!user?.quizHistory) return false
-    
-    const today = new Date().toDateString()
-    return user.quizHistory.some(quiz => 
-      new Date(quiz.completedAt).toDateString() === today
-    )
+  // Check if user has completed any quiz
+  const hasCompletedAnyQuiz = () => {
+    return user?.quizHistory && user.quizHistory.length > 0
   }
 
-  const userCanAccessRewards = hasCompletedQuizToday()
+  const userCanAccessRewards = hasCompletedAnyQuiz()
 
   const tabs = [
     { key: 'facts', label: 'Fun Facts', icon: '🧠' },
@@ -134,14 +114,14 @@ const DailyChallenge = () => {
     return (
       <div className="bg-slate-800 rounded-xl p-8 text-center">
         <div className="text-6xl mb-4">🌌</div>
-        <h2 className="text-2xl font-bold text-white mb-4">Daily Space Rewards</h2>
+        <h2 className="text-2xl font-bold text-white mb-4">Space Rewards</h2>
         <p className="text-slate-300 mb-6">
-          Complete a quiz today to unlock amazing space facts and NASA images!
+          Complete a quiz to unlock amazing space facts and NASA images!
         </p>
         <div className="bg-slate-700 rounded-lg p-4">
           <div className="text-slate-400">🎯 Complete any quiz to unlock:</div>
           <div className="text-white mt-2">
-            • Daily astronomy fun facts<br/>
+            • Astronomy fun facts<br/>
             • NASA's Astronomy Picture of the Day<br/>
             • Educational space content
           </div>
@@ -155,7 +135,7 @@ const DailyChallenge = () => {
       {/* Header */}
       <div className="p-6 border-b border-slate-700">
         <h2 className="text-2xl font-bold text-white text-center mb-4">
-          🌌 Daily Space Rewards
+          🌌 Space Rewards
         </h2>
         <div className="flex bg-slate-700 rounded-lg p-1">
           {tabs.map((tab) => (
@@ -214,14 +194,16 @@ const DailyChallenge = () => {
             ) : spaceImage ? (
               <div className="space-y-4">
                 <div className="bg-slate-700 rounded-lg overflow-hidden">
-                  <img 
-                    src={spaceImage.url} 
-                    alt={spaceImage.title}
-                    className="w-full h-64 object-cover"
-                    onError={(e) => {
-                      e.target.src = '/placeholder-space.jpg'
-                    }}
-                  />
+                  <div className="w-full flex justify-center bg-black">
+                    <img 
+                      src={spaceImage.url} 
+                      alt={spaceImage.title}
+                      className="max-w-full max-h-96 object-contain"
+                      onError={(e) => {
+                        e.target.src = '/placeholder-space.jpg'
+                      }}
+                    />
+                  </div>
                   <div className="p-4">
                     <h3 className="text-lg font-bold text-white mb-2">{spaceImage.title}</h3>
                     <p className="text-slate-300 text-sm leading-relaxed">

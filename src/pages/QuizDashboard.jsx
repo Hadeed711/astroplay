@@ -83,7 +83,7 @@ const QuizDashboard = () => {
 
   const tabs = [
     { key: 'overview', label: 'Overview', icon: '📊' },
-    { key: 'rewards', label: 'Daily Rewards', icon: '�' }
+    { key: 'rewards', label: 'Rewards', icon: '🌌' }
   ]
 
   return (

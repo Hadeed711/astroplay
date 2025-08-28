@@ -7,13 +7,13 @@ const RewardNotification = ({ onClose, score, percentage }) => {
   const rewards = {
     fact: {
       title: "🧠 Space Fact Unlocked!",
-      description: "Visit the Daily Rewards section to discover amazing astronomy facts!",
+      description: "Visit the Rewards section to discover amazing astronomy facts!",
       icon: "🌌",
       color: "from-blue-600 to-purple-600"
     },
     image: {
       title: "🖼️ NASA Image Unlocked!",
-      description: "Check out today's Astronomy Picture of the Day in your rewards!",
+      description: "Check out the Astronomy Picture of the Day in your rewards!",
       icon: "🛰️", 
       color: "from-purple-600 to-pink-600"
     }
@@ -22,12 +22,12 @@ const RewardNotification = ({ onClose, score, percentage }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowReward(true)
-      // Choose reward type based on performance
-      setRewardType(percentage >= 80 ? 'image' : 'fact')
+      // Choose random reward type for variety
+      setRewardType(Math.random() > 0.5 ? 'image' : 'fact')
     }, 1000)
 
     return () => clearTimeout(timer)
-  }, [percentage])
+  }, [])
 
   if (!showReward) return null
 

@@ -151,8 +151,8 @@ const PersonalizedFeedback = ({ quizResult, onClose }) => {
   const personalMessage = getPersonalizedMessage()
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50 pt-32">
+      <div className="bg-slate-800 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto mt-16">
         <div className="p-6">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
@@ -247,15 +247,6 @@ const PersonalizedFeedback = ({ quizResult, onClose }) => {
               className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition-colors"
             >
               Continue Learning
-            </button>
-            <button
-              onClick={() => {
-                // Share results functionality could go here
-                navigator.clipboard.writeText(`I scored ${quizResult.score} points on AstroPlay! 🚀`)
-              }}
-              className="px-4 py-2 bg-slate-600 hover:bg-slate-700 rounded-lg text-white transition-colors"
-            >
-              Share Results
             </button>
           </div>
         </div>

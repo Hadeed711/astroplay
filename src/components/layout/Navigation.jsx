@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Compass, 
   Brain, 
@@ -14,6 +14,18 @@ import {
 const Navigation = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 0);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
     { path: "/explore", label: "Explore", icon: Compass },
@@ -34,15 +46,25 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-space-dark/90 backdrop-blur-sm border-b border-space-blue/20 sticky top-0 z-50">
+    <nav className={`bg-space-dark/90 backdrop-blur-sm border-b border-space-blue/20 sticky top-0 z-50 transition-all duration-300 ${
+      isScrolled 
+        ? 'mx-4 mt-4 rounded-xl border border-space-blue/30 shadow-lg' 
+        : ''
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className={`flex items-center justify-between transition-all duration-300 ${
+          isScrolled ? 'h-12 md:h-14' : 'h-16 md:h-20'
+        }`}>
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-4 hover:opacity-80 transition-opacity relative">
             <img
               src="/AstroPlay Logo.png"
               alt="AstroPlay Logo"
-              className="h-20 md:h-24 lg:h-28 w-auto max-w-none filter drop-shadow-lg relative z-10"
+              className={`w-auto max-w-none filter drop-shadow-lg relative z-10 transition-all duration-300 ${
+                isScrolled 
+                  ? 'h-12 md:h-16 lg:h-18' 
+                  : 'h-20 md:h-24 lg:h-28'
+              }`}
               style={{ marginTop: '-8px', marginBottom: '-8px' }}
             />
           </Link>
