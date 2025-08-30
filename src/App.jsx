@@ -9,7 +9,6 @@ import BlogsPage from './pages/BlogsPage'
 import BlogPostPage from './pages/BlogPostPage'
 import DataVisualizationPage from './pages/DataVisualizationPage'
 import { AudioProvider } from './components/audio/AudioSystem'
-import { PerformanceDisplay } from './components/performance/PerformanceLOD'
 import ScrollToTop from './components/utils/ScrollToTop'
 
 // Simple preload function
@@ -38,8 +37,6 @@ function App() {
             <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/data-viz" element={<DataVisualizationPage />} />
           </Routes>
-          {/* Performance Monitor */}
-          <PerformanceDisplay />
         </Layout>
       </Router>
     </AudioProvider>

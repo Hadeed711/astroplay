@@ -31,17 +31,23 @@ const QuizDashboard = () => {
     )
   }
 
-  const getRecentPerformance = () => {
+  const getTodayPerformance = () => {
     if (!user?.quizHistory || user.quizHistory.length === 0) return null
     
-    const recent = user.quizHistory.slice(-5)
-    const totalCorrect = recent.reduce((sum, quiz) => sum + quiz.correctAnswers, 0)
-    const totalQuestions = recent.reduce((sum, quiz) => sum + quiz.totalQuestions, 0)
+    const today = new Date().toDateString()
+    const todayQuizzes = user.quizHistory.filter(quiz => 
+      new Date(quiz.completedAt).toDateString() === today
+    )
+    
+    if (todayQuizzes.length === 0) return null
+    
+    const totalCorrect = todayQuizzes.reduce((sum, quiz) => sum + quiz.correctAnswers, 0)
+    const totalQuestions = todayQuizzes.reduce((sum, quiz) => sum + quiz.totalQuestions, 0)
     
     return {
       percentage: Math.round((totalCorrect / totalQuestions) * 100),
-      trend: recent.length >= 2 ? 'improving' : 'stable', // Simplified trend calculation
-      quizzesTaken: recent.length
+      quizzesTaken: todayQuizzes.length,
+      totalScore: todayQuizzes.reduce((sum, quiz) => sum + quiz.score, 0)
     }
   }
 
@@ -78,7 +84,7 @@ const QuizDashboard = () => {
     }
   }
 
-  const recentPerformance = getRecentPerformance()
+  const todayPerformance = getTodayPerformance()
   const recommendedQuiz = getRecommendedQuiz()
 
   const tabs = [
@@ -127,30 +133,28 @@ const QuizDashboard = () => {
           <div className="space-y-6">
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Recent Performance */}
+              {/* Today's Performance */}
               <div className="bg-slate-800 rounded-xl p-6">
                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                  <span>📈</span>
-                  Recent Performance
+                  <span>🌅</span>
+                  Today's Performance
                 </h3>
-                {recentPerformance ? (
+                {todayPerformance ? (
                   <div>
                     <div className="text-3xl font-bold text-blue-400 mb-2">
-                      {recentPerformance.percentage}%
+                      {todayPerformance.percentage}%
                     </div>
                     <div className="text-sm text-slate-400">
-                      Last {recentPerformance.quizzesTaken} quizzes
+                      {todayPerformance.quizzesTaken} quiz{todayPerformance.quizzesTaken > 1 ? 'es' : ''} today
                     </div>
-                    <div className={`text-sm mt-2 ${
-                      recentPerformance.trend === 'improving' ? 'text-green-400' : 'text-blue-400'
-                    }`}>
-                      {recentPerformance.trend === 'improving' ? '📈 Improving' : '➡️ Consistent'}
+                    <div className="text-sm mt-2 text-green-400">
+                      🏆 Total Score: {todayPerformance.totalScore}
                     </div>
                   </div>
                 ) : (
                   <div className="text-center py-4">
-                    <div className="text-4xl mb-2">🎯</div>
-                    <p className="text-slate-400">Take your first quiz!</p>
+                    <div className="text-4xl mb-2">�</div>
+                    <p className="text-slate-400">No quizzes taken today</p>
                   </div>
                 )}
               </div>

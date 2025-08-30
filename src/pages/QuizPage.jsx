@@ -4,7 +4,6 @@ import { generateQuizQuestions, quizModes } from '../data/quizQuestions'
 import { useAppStore } from '../store/useAppStore'
 import PersonalizedFeedback from '../components/quiz/PersonalizedFeedback'
 import UserSetup from '../components/quiz/UserSetup'
-import RewardNotification from '../components/quiz/RewardNotification'
 
 const QuizPage = () => {
   const navigate = useNavigate()
@@ -17,13 +16,10 @@ const QuizPage = () => {
   const [showResults, setShowResults] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0)
   const [score, setScore] = useState(0)
-  const [streak, setStreak] = useState(0)
-  const [maxStreak, setMaxStreak] = useState(0)
   const [hintsUsed, setHintsUsed] = useState(0)
   const [showHint, setShowHint] = useState(false)
   const [questionStartTime, setQuestionStartTime] = useState(Date.now())
   const [showFeedback, setShowFeedback] = useState(false)
-  const [showRewardNotification, setShowRewardNotification] = useState(false)
 
   // Timer effect
   useEffect(() => {
@@ -44,8 +40,6 @@ const QuizPage = () => {
     setUserAnswers([])
     setShowResults(false)
     setScore(0)
-    setStreak(0)
-    setMaxStreak(0)
     setHintsUsed(0)
     setShowHint(false)
     setQuestionStartTime(Date.now())
@@ -82,17 +76,8 @@ const QuizPage = () => {
       // Speed bonus (answered in under 10 seconds)
       if (timeSpent < 10) points += 5
       
-      // Streak bonus
-      const newStreak = streak + 1
-      setStreak(newStreak)
-      setMaxStreak(Math.max(maxStreak, newStreak))
-      
-      if (newStreak >= 3) points += 2 * newStreak // Escalating streak bonus
-      
       // No hint bonus
       if (!showHint) points += 3
-    } else {
-      setStreak(0)
     }
 
     setScore(score + points)
@@ -142,34 +127,18 @@ const QuizPage = () => {
       correctAnswers,
       timeSpent: quizModes[selectedMode].timeLimit - timeLeft,
       avgTimePerQuestion,
-      maxStreak,
       hintsUsed,
       answers: userAnswers,
       completedAt: new Date().toISOString()
     }
     
     updateUserProgress('quiz', quizResult)
-    
-    // Show reward notification after a brief delay
-    setTimeout(() => {
-      setShowRewardNotification(true)
-    }, 2000)
   }
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
-
-  const getStreakDisplay = () => {
-    if (streak === 0) return null
-    return (
-      <div className="flex items-center gap-2 text-orange-400">
-        <span>🔥</span>
-        <span className="font-bold">{streak} streak!</span>
-      </div>
-    )
   }
 
   // Show user setup if not completed
@@ -236,7 +205,7 @@ const QuizPage = () => {
           {user?.quizStats && (
             <div className="mt-12 bg-slate-800 p-6 rounded-xl">
               <h2 className="text-xl font-bold mb-4">Your Quiz Stats</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-blue-400">{user.quizStats.totalQuizzes || 0}</div>
                   <div className="text-sm text-slate-400">Quizzes Taken</div>
@@ -244,10 +213,6 @@ const QuizPage = () => {
                 <div>
                   <div className="text-2xl font-bold text-green-400">{user.quizStats.averageScore || 0}%</div>
                   <div className="text-sm text-slate-400">Average Score</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-orange-400">{user.quizStats.bestStreak || 0}</div>
-                  <div className="text-sm text-slate-400">Best Streak</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-purple-400">{user.quizStats.totalPoints || 0}</div>
@@ -259,8 +224,9 @@ const QuizPage = () => {
         </div>
       </div>
     )
-  } 
- if (showResults) {
+  }
+
+  if (showResults) {
     const correctAnswers = userAnswers.filter(a => a.correct).length
     const percentage = Math.round((correctAnswers / questions.length) * 100)
     const totalPossiblePoints = questions.reduce((sum, q) => sum + q.points, 0)
@@ -288,10 +254,6 @@ const QuizPage = () => {
             <div className="bg-slate-800 p-8 rounded-xl">
               <h3 className="text-xl font-bold mb-4">Performance Breakdown</h3>
               <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span>Best Streak:</span>
-                  <span className="text-orange-400 font-bold">🔥 {maxStreak}</span>
-                </div>
                 <div className="flex justify-between">
                   <span>Hints Used:</span>
                   <span className="text-blue-400">{hintsUsed}</span>
@@ -377,7 +339,6 @@ const QuizPage = () => {
                 correctAnswers,
                 timeSpent: quizModes[selectedMode].timeLimit - timeLeft,
                 avgTimePerQuestion: userAnswers.reduce((sum, a) => sum + a.timeSpent, 0) / userAnswers.length,
-                maxStreak,
                 hintsUsed,
                 answers: userAnswers
               }}
@@ -401,7 +362,6 @@ const QuizPage = () => {
             <div className="text-lg">
               Question {currentQuestion + 1} of {questions.length}
             </div>
-            {getStreakDisplay()}
           </div>
           <div className="flex items-center gap-4">
             <div className="text-lg font-mono">
@@ -515,15 +475,6 @@ const QuizPage = () => {
           )}
         </div>
       </div>
-      
-      {/* Reward Notification */}
-      {showRewardNotification && (
-        <RewardNotification
-          onClose={() => setShowRewardNotification(false)}
-          score={score}
-          percentage={Math.round((userAnswers.filter(a => a.correct).length / questions.length) * 100)}
-        />
-      )}
     </div>
   )
 }

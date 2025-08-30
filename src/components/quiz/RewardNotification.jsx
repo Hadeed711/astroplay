@@ -35,7 +35,9 @@ const RewardNotification = ({ onClose, score, percentage }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-800 rounded-xl max-w-md w-full overflow-hidden animate-bounce">
+      <div 
+        className="bg-slate-800 rounded-xl max-w-md w-full overflow-hidden animate-fade-in-up"
+      >
         <div className={`bg-gradient-to-r ${reward.color} p-6 text-center`}>
           <div className="text-6xl mb-2">{reward.icon}</div>
           <h2 className="text-2xl font-bold text-white">{reward.title}</h2>

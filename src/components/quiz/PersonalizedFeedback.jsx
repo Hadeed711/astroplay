@@ -109,14 +109,6 @@ const PersonalizedFeedback = ({ quizResult, onClose }) => {
   const getAchievements = () => {
     const achievements = []
     
-    if (quizResult.maxStreak >= 5) {
-      achievements.push({
-        title: "Streak Master",
-        description: `Amazing ${quizResult.maxStreak}-question streak!`,
-        icon: "🔥"
-      })
-    }
-    
     if (quizResult.hintsUsed === 0) {
       achievements.push({
         title: "Independent Thinker",
@@ -151,8 +143,8 @@ const PersonalizedFeedback = ({ quizResult, onClose }) => {
   const personalMessage = getPersonalizedMessage()
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-start justify-center p-4 z-50 pt-32">
-      <div className="bg-slate-800 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto mt-16">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 pt-20">
+      <div className="bg-slate-800 rounded-xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">

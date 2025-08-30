@@ -98,6 +98,16 @@ const DailyChallenge = () => {
     }
   }, [activeTab])
 
+  // Refresh content when user completes more quizzes
+  useEffect(() => {
+    if (user?.quizHistory) {
+      setFunFact(getRandomFact())
+      if (activeTab === 'images') {
+        fetchSpaceImage()
+      }
+    }
+  }, [user?.quizHistory?.length, activeTab])
+
   // Check if user has completed any quiz
   const hasCompletedAnyQuiz = () => {
     return user?.quizHistory && user.quizHistory.length > 0
