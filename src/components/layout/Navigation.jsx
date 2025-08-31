@@ -7,6 +7,7 @@ import {
   TrendingUp, 
   BookOpen, 
   FileText,
+  MessageCircle,  // Added for AI Chat
   Menu,
   X
 } from "lucide-react";
@@ -31,6 +32,7 @@ const Navigation = () => {
     { path: "/explore", label: "Explore", icon: Compass },
     { path: "/quiz", label: "Quiz", icon: Brain },
     { path: "/quiz-dashboard", label: "Dashboard", icon: BarChart3 },
+    { path: "/ai-chat", label: "AI Chat", icon: MessageCircle },  // Added AI Chat
     { path: "/definitions", label: "Definitions", icon: BookOpen },
     { path: "/blogs", label: "Blogs", icon: FileText },
     { path: "/data-viz", label: "Data Viz", icon: TrendingUp },
