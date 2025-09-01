@@ -1,0 +1,84 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Production build (will be built on Vercel)
+dist/
+build/
+
+# Environment variables (use Vercel dashboard instead)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# ESLint cache
+.eslintcache
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Local development files
+.cache/
+.temp/
+.tmp/
+
+# Git files
+.git/
+.gitignore
+
+# Documentation that's not needed in production
+docs/
+*.md
+!README.md
+
+# Test files
+__tests__/
+*.test.js
+*.test.jsx
+*.spec.js
+*.spec.jsx
+
+# Storybook files
+.storybook/
+storybook-static/

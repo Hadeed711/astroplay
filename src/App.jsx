@@ -38,6 +38,8 @@ function App() {
             <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/data-viz" element={<DataVisualizationPage />} />
             <Route path="/space-legends" element={<SpaceLegendsPage />} />
+            {/* Catch-all route for 404 pages - redirects to home */}
+            <Route path="*" element={<ExplorePage />} />
           </Routes>
         </Layout>
       </Router>
