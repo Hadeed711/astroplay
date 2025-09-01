@@ -8,7 +8,7 @@ export const blogPosts = [
     date: '2024-12-15',
     readTime: '5 min read',
     excerpt: 'From James Webb Space Telescope discoveries to Mars exploration updates, explore the most exciting space news of 2024.',
-    image: '/images/space-news-2024.jpg',
+    image: '/images/blogs/space-news-2024.jpg',
     tags: ['Space Exploration', 'JWST', 'Mars', 'Astronomy'],
     content: `
 # Latest Space Discoveries: What 2024 Has Revealed
@@ -109,7 +109,7 @@ The universe is vast and full of wonders—and we're just getting started in exp
     date: '2024-12-10',
     readTime: '7 min read',
     excerpt: 'Explore the latest climate science, from rising temperatures to innovative solutions for our planet\'s environmental challenges.',
-    image: '/images/climate-change-2024.jpg',
+    image: '/images/blogs/climate-change-space.webp',
     tags: ['Climate Change', 'Environment', 'Sustainability', 'Earth Science'],
     content: `
 # Earth's Climate Crisis: Understanding Our Changing Planet

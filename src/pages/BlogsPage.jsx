@@ -63,11 +63,32 @@ const BlogsPage = () => {
               className="bg-slate-800 rounded-xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300 cursor-pointer"
               onClick={() => navigate(`/blog/${blog.id}`)}
             >
-              {/* Blog Image Placeholder */}
-              <div className="h-48 bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                <span className="text-4xl">
-                  {blog.category === 'Space News' ? '🌌' : '🌍'}
-                </span>
+              {/* Blog Image */}
+              <div className="h-48 bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center overflow-hidden relative">
+                {blog.image ? (
+                  <img
+                    src={blog.image}
+                    alt={blog.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      e.target.nextSibling.style.display = 'flex'
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className={`absolute inset-0 flex items-center justify-center ${blog.image ? 'hidden' : 'flex'}`}
+                  style={{ display: blog.image ? 'none' : 'flex' }}
+                >
+                  <div className="text-center">
+                    <span className="text-4xl block mb-2">
+                      {blog.category === 'Space News' ? '🌌' : '🌍'}
+                    </span>
+                    <span className="text-xs text-blue-100 opacity-75 px-2">
+                      Add image to: /public{blog.image || '/images/blogs/blog-' + blog.id + '.jpg'}
+                    </span>
+                  </div>
+                </div>
               </div>
               
               {/* Blog Content */}

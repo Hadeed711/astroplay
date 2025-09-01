@@ -203,11 +203,37 @@ ${blog.category === 'Space News' ? '#SpaceNews #Astronomy #Universe' : '#Climate
               </div>
             </header>
 
-            {/* Featured Image Placeholder */}
-            <div className="h-64 md:h-96 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl mb-8 flex items-center justify-center">
-              <span className="text-6xl">
-                {blog.category === 'Space News' ? '🌌' : '🌍'}
-              </span>
+            {/* Featured Image */}
+            <div className="h-64 md:h-96 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl mb-8 flex items-center justify-center overflow-hidden relative">
+              {blog.image ? (
+                <img
+                  src={blog.image}
+                  alt={blog.title}
+                  className="w-full h-full object-cover rounded-xl"
+                  onError={(e) => {
+                    e.target.style.display = 'none'
+                    e.target.nextSibling.style.display = 'flex'
+                  }}
+                />
+              ) : null}
+              <div 
+                className={`absolute inset-0 flex items-center justify-center rounded-xl ${blog.image ? 'hidden' : 'flex'}`}
+                style={{ display: blog.image ? 'none' : 'flex' }}
+              >
+                <div className="text-center">
+                  <span className="text-6xl block mb-4">
+                    {blog.category === 'Space News' ? '🌌' : '🌍'}
+                  </span>
+                  <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 max-w-md">
+                    <p className="text-sm text-blue-100 opacity-90 mb-2 font-medium">
+                      Image Location:
+                    </p>
+                    <code className="text-xs text-blue-200 bg-black/30 px-3 py-1 rounded block">
+                      /public{blog.image || '/images/blogs/blog-' + blog.id + '.jpg'}
+                    </code>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Content */}
@@ -272,11 +298,37 @@ ${blog.category === 'Space News' ? '#SpaceNews #Astronomy #Universe' : '#Climate
                         className="cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition-colors"
                         onClick={() => navigate(`/blog/${recentBlog.id}`)}
                       >
-                        <h4 className="font-medium mb-2 line-clamp-2 text-sm">
-                          {recentBlog.title}
-                        </h4>
-                        <div className="text-xs text-slate-400">
-                          {formatDate(recentBlog.date)}
+                        <div className="flex gap-3">
+                          {/* Thumbnail */}
+                          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            {recentBlog.image ? (
+                              <img
+                                src={recentBlog.image}
+                                alt={recentBlog.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.style.display = 'none'
+                                  e.target.nextSibling.style.display = 'flex'
+                                }}
+                              />
+                            ) : null}
+                            <span 
+                              className={`text-sm ${recentBlog.image ? 'hidden' : 'block'}`}
+                              style={{ display: recentBlog.image ? 'none' : 'block' }}
+                            >
+                              {recentBlog.category === 'Space News' ? '🌌' : '🌍'}
+                            </span>
+                          </div>
+                          
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium mb-2 line-clamp-2 text-sm">
+                              {recentBlog.title}
+                            </h4>
+                            <div className="text-xs text-slate-400">
+                              {formatDate(recentBlog.date)}
+                            </div>
+                          </div>
                         </div>
                       </article>
                     ))}
