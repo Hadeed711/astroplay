@@ -8,7 +8,8 @@ import {
   BookOpen, 
   FileText,
   Menu,
-  X
+  X,
+  Star
 } from "lucide-react";
 
 const Navigation = () => {
@@ -34,6 +35,7 @@ const Navigation = () => {
     { path: "/definitions", label: "Definitions", icon: BookOpen },
     { path: "/blogs", label: "Blogs", icon: FileText },
     { path: "/data-viz", label: "Data Viz", icon: TrendingUp },
+    { path: "/space-legends", label: "Space Legends", icon: Star },
   ];
 
   // Function to check if a nav item should be highlighted

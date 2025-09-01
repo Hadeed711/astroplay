@@ -8,6 +8,7 @@ import DefinitionsPage from './pages/DefinitionsPage'
 import BlogsPage from './pages/BlogsPage'
 import BlogPostPage from './pages/BlogPostPage'
 import DataVisualizationPage from './pages/DataVisualizationPage'
+import SpaceLegendsPage from './pages/SpaceLegendsPage'
 import { AudioProvider } from './components/audio/AudioSystem'
 import ScrollToTop from './components/utils/ScrollToTop'
 
@@ -36,6 +37,7 @@ function App() {
             <Route path="/blogs" element={<BlogsPage />} />
             <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/data-viz" element={<DataVisualizationPage />} />
+            <Route path="/space-legends" element={<SpaceLegendsPage />} />
           </Routes>
         </Layout>
       </Router>
