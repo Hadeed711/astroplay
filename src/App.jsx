@@ -4,7 +4,6 @@ import Layout from './components/layout/Layout'
 import ExplorePage from './pages/ExplorePage'
 import QuizPage from './pages/QuizPage'
 import QuizDashboard from './pages/QuizDashboard'
-import AIChatPage from './pages/AIChatPage'
 import DefinitionsPage from './pages/DefinitionsPage'
 import BlogsPage from './pages/BlogsPage'
 import BlogPostPage from './pages/BlogPostPage'
@@ -33,7 +32,6 @@ function App() {
             <Route path="/explore" element={<ExplorePage />} />
             <Route path="/quiz" element={<QuizPage />} />
             <Route path="/quiz-dashboard" element={<QuizDashboard />} />
-            <Route path="/ai-chat" element={<AIChatPage />} />
             <Route path="/definitions" element={<DefinitionsPage />} />
             <Route path="/blogs" element={<BlogsPage />} />
             <Route path="/blog/:id" element={<BlogPostPage />} />
