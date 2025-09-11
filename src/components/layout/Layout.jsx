@@ -49,7 +49,7 @@ const Layout = ({ children }) => {
           </div>
           
           {/* Game Controls */}
-          <div className="fixed top-28 md:top-32 right-2 md:right-4 z-40">
+          <div className="fixed top-36 md:top-40 right-2 md:right-4 z-40">
             <GameControls />
           </div>
           

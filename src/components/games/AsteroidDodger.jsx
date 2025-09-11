@@ -553,19 +553,29 @@ const AsteroidDodger = ({ onClose }) => {
 
   // Game loop
   useEffect(() => {
+    // Cancel any existing game loop
+    if (gameLoopRef.current) {
+      cancelAnimationFrame(gameLoopRef.current);
+      gameLoopRef.current = null;
+    }
+
     const gameLoop = () => {
       updateGame();
       renderGame();
       gameLoopRef.current = requestAnimationFrame(gameLoop);
     };
 
-    if (gameState === "playing" || gameState === "paused") {
+    if (gameState === "playing") {
       gameLoopRef.current = requestAnimationFrame(gameLoop);
+    } else if (gameState === "paused") {
+      // Still render when paused, but don't update
+      renderGame();
     }
 
     return () => {
       if (gameLoopRef.current) {
         cancelAnimationFrame(gameLoopRef.current);
+        gameLoopRef.current = null;
       }
     };
   }, [gameState, updateGame, renderGame]);
@@ -577,8 +587,24 @@ const AsteroidDodger = ({ onClose }) => {
 
     const resizeCanvas = () => {
       const container = canvas.parentElement;
-      canvas.width = Math.min(800, container.clientWidth - 40);
-      canvas.height = Math.min(600, window.innerHeight - 200);
+      const containerWidth = container.clientWidth - 40;
+      const containerHeight = window.innerHeight - 150;
+
+      // Set canvas to a good native resolution
+      const baseWidth = 1000;
+      const baseHeight = 700;
+
+      // Scale down if needed to fit screen
+      const scaleX = containerWidth / baseWidth;
+      const scaleY = containerHeight / baseHeight;
+      const scale = Math.min(scaleX, scaleY, 1); // Don't scale up, only down
+
+      canvas.width = baseWidth * scale;
+      canvas.height = baseHeight * scale;
+
+      // Set CSS size to match canvas size to prevent stretching/blurriness
+      canvas.style.width = canvas.width + "px";
+      canvas.style.height = canvas.height + "px";
     };
 
     resizeCanvas();
@@ -594,100 +620,123 @@ const AsteroidDodger = ({ onClose }) => {
   };
 
   const restartGame = () => {
+    // Cancel any existing game loop
+    if (gameLoopRef.current) {
+      cancelAnimationFrame(gameLoopRef.current);
+      gameLoopRef.current = null;
+    }
+
+    // Reset all state
     setShowFact(null);
-    startGame();
+    setScore(0);
+
+    // Initialize and start game
+    setTimeout(() => {
+      initGame();
+      setGameState("playing");
+      playSound("travel_start");
+    }, 100); // Small delay to ensure state is reset
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-900 rounded-xl border border-blue-500/30 max-w-4xl w-full max-h-[90vh] overflow-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b border-slate-700">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            🚀 Asteroid Dodger
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white text-2xl"
-          >
-            ×
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-black z-50 flex flex-col">
+      {/* Header */}
+      <div className="flex justify-between items-center p-4 bg-slate-900/95 backdrop-blur-sm border-b border-blue-500/30">
+        <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
+          🚀 Asteroid Dodger
+        </h2>
+        <button
+          onClick={onClose}
+          className="text-gray-400 hover:text-white text-3xl md:text-4xl font-bold leading-none hover:bg-red-600/20 rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center transition-colors"
+        >
+          ×
+        </button>
+      </div>
 
-        {/* Game Content */}
-        <div className="p-4">
+      {/* Game Content */}
+      <div className="flex-1 bg-slate-900/95 backdrop-blur-sm overflow-auto">
+        <div className="p-4 md:p-6 h-full flex flex-col">
           {gameState === "menu" && (
-            <div className="text-center space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-xl text-white">
-                  Navigate through the asteroid field!
-                </h3>
-                <p className="text-gray-300">
-                  Use arrow keys, WASD, or touch/tap to move your spacecraft.
-                  Avoid asteroids and collect power-ups!
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="text-lg text-white">Choose Difficulty:</h4>
-                <div className="flex justify-center gap-4">
-                  <button
-                    onClick={() => setDifficulty("inner")}
-                    className={`px-6 py-3 rounded-lg transition-colors ${
-                      difficulty === "inner"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-700 text-gray-300 hover:bg-slate-600"
-                    }`}
-                  >
-                    Inner Solar System
-                    <div className="text-sm opacity-75">
-                      Fewer, slower asteroids
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => setDifficulty("outer")}
-                    className={`px-6 py-3 rounded-lg transition-colors ${
-                      difficulty === "outer"
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-700 text-gray-300 hover:bg-slate-600"
-                    }`}
-                  >
-                    Outer Solar System
-                    <div className="text-sm opacity-75">
-                      More, faster asteroids
-                    </div>
-                  </button>
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center space-y-6 md:space-y-8 max-w-4xl mx-auto px-4">
+                <div className="space-y-4">
+                  <h3 className="text-xl md:text-2xl text-white font-bold">
+                    Navigate through the asteroid field!
+                  </h3>
+                  <p className="text-base md:text-lg text-gray-300">
+                    Use arrow keys, WASD, or touch/tap to move your spacecraft.
+                    Avoid asteroids and collect power-ups!
+                  </p>
                 </div>
+
+                <div className="space-y-6">
+                  <h4 className="text-lg md:text-xl text-white font-bold">
+                    Choose Difficulty:
+                  </h4>
+                  <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
+                    <button
+                      onClick={() => setDifficulty("inner")}
+                      className={`px-6 md:px-8 py-4 md:py-6 rounded-lg transition-colors text-left ${
+                        difficulty === "inner"
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-700 text-gray-300 hover:bg-slate-600"
+                      }`}
+                    >
+                      <div className="text-base md:text-lg font-bold">
+                        Inner Solar System
+                      </div>
+                      <div className="text-sm opacity-75">
+                        Fewer, slower asteroids
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => setDifficulty("outer")}
+                      className={`px-6 md:px-8 py-4 md:py-6 rounded-lg transition-colors text-left ${
+                        difficulty === "outer"
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-700 text-gray-300 hover:bg-slate-600"
+                      }`}
+                    >
+                      <div className="text-base md:text-lg font-bold">
+                        Outer Solar System
+                      </div>
+                      <div className="text-sm opacity-75">
+                        More, faster asteroids
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-sm md:text-base text-gray-400">
+                  <p>🛡️ Shield Power-up: Protects you from one asteroid hit</p>
+                  <p>⏰ Slow-Mo Power-up: Slows down asteroids temporarily</p>
+                  <p>Press SPACE to pause during gameplay</p>
+                </div>
+
+                <button
+                  onClick={startGame}
+                  className="px-8 md:px-10 py-3 md:py-4 bg-green-600 hover:bg-green-700 text-white rounded-lg text-lg md:text-xl font-bold transition-colors"
+                >
+                  🚀 Start Game
+                </button>
+
+                {highScore > 0 && (
+                  <p className="text-yellow-400 text-base md:text-lg font-bold">
+                    🏆 High Score: {highScore}
+                  </p>
+                )}
               </div>
-
-              <div className="space-y-2 text-sm text-gray-400">
-                <p>🛡️ Shield Power-up: Protects you from one asteroid hit</p>
-                <p>⏰ Slow-Mo Power-up: Slows down asteroids temporarily</p>
-                <p>Press SPACE to pause during gameplay</p>
-              </div>
-
-              <button
-                onClick={startGame}
-                className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xl font-bold transition-colors"
-              >
-                Start Game
-              </button>
-
-              {highScore > 0 && (
-                <p className="text-yellow-400">High Score: {highScore}</p>
-              )}
             </div>
           )}
 
           {(gameState === "playing" || gameState === "paused") && (
-            <div className="flex flex-col items-center">
+            <div className="flex-1 flex flex-col items-center justify-center p-4">
               <canvas
                 ref={canvasRef}
-                className="border border-slate-600 rounded-lg"
-                style={{ maxWidth: "100%", height: "auto" }}
+                className="border border-slate-600 rounded-lg shadow-2xl"
               />
               <div className="mt-4 text-center text-gray-300">
-                <p>
+                <p className="text-sm md:text-base">
                   Use Arrow Keys, WASD, or Touch to move • Press SPACE to pause
                 </p>
               </div>
@@ -695,39 +744,49 @@ const AsteroidDodger = ({ onClose }) => {
           )}
 
           {gameState === "gameOver" && (
-            <div className="text-center space-y-6">
-              <h3 className="text-2xl text-red-400">Game Over!</h3>
-              <p className="text-xl text-white">Final Score: {score}</p>
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center space-y-6 md:space-y-8 max-w-2xl mx-auto px-4">
+                <h3 className="text-2xl md:text-3xl text-red-400 font-bold">
+                  Game Over!
+                </h3>
+                <p className="text-xl md:text-2xl text-white font-bold">
+                  Final Score: {score}
+                </p>
 
-              {score === highScore && score > 0 && (
-                <p className="text-yellow-400 text-lg">🎉 New High Score!</p>
-              )}
-
-              {showFact && (
-                <div className="bg-blue-900/50 rounded-lg p-4 max-w-md mx-auto">
-                  <h4 className="text-lg font-bold text-blue-300 mb-2">
-                    {showFact.title}
-                  </h4>
-                  <p className="text-gray-300 mb-2">{showFact.fact}</p>
-                  <p className="text-sm text-gray-400">
-                    Source: {showFact.source}
+                {score === highScore && score > 0 && (
+                  <p className="text-yellow-400 text-lg md:text-xl font-bold">
+                    🎉 New High Score!
                   </p>
-                </div>
-              )}
+                )}
 
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={restartGame}
-                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                >
-                  Play Again
-                </button>
-                <button
-                  onClick={() => setGameState("menu")}
-                  className="px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors"
-                >
-                  Main Menu
-                </button>
+                {showFact && (
+                  <div className="bg-blue-900/50 rounded-lg p-4 md:p-6 max-w-lg mx-auto">
+                    <h4 className="text-lg md:text-xl font-bold text-blue-300 mb-3">
+                      {showFact.title}
+                    </h4>
+                    <p className="text-gray-300 mb-3 text-sm md:text-base">
+                      {showFact.fact}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Source: {showFact.source}
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  <button
+                    onClick={restartGame}
+                    className="px-8 md:px-10 py-3 md:py-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-lg md:text-xl font-bold"
+                  >
+                    🚀 Play Again
+                  </button>
+                  <button
+                    onClick={() => setGameState("menu")}
+                    className="px-8 md:px-10 py-3 md:py-4 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors text-lg md:text-xl font-bold"
+                  >
+                    📋 Main Menu
+                  </button>
+                </div>
               </div>
             </div>
           )}
