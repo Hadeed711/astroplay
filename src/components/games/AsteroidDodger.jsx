@@ -496,9 +496,9 @@ const AsteroidDodger = ({ onClose }) => {
 
         // Draw symbol
         ctx.fillStyle = "#ffffff";
-        ctx.font = "12px Arial";
+        ctx.font = "10px Arial";
         ctx.textAlign = "center";
-        ctx.fillText(powerUp.type === "shield" ? "🛡️" : "⏰", 0, 4);
+        ctx.fillText(powerUp.type === "shield" ? "🛡️" : "⏰", 0, 3);
 
         ctx.restore();
       });
@@ -514,23 +514,25 @@ const AsteroidDodger = ({ onClose }) => {
         ctx.fillRect(particle.x, particle.y, 2, 2);
       });
 
-      // Draw UI
+      // Draw UI with smaller text
       ctx.fillStyle = "#ffffff";
-      ctx.font = "20px Arial";
+      ctx.font = "16px Arial";
       ctx.textAlign = "left";
-      ctx.fillText(`Score: ${score}`, 10, 30);
-      ctx.fillText(`High Score: ${highScore}`, 10, 55);
+      ctx.fillText(`Score: ${score}`, 10, 25);
+      ctx.fillText(`High Score: ${highScore}`, 10, 45);
+      ctx.font = "14px Arial";
       ctx.fillText(
         `Difficulty: ${
           difficulty === "inner" ? "Inner Solar System" : "Outer Solar System"
         }`,
         10,
-        80
+        65
       );
 
       if (player.shield) {
         ctx.fillStyle = "#00ff00";
-        ctx.fillText(`Shield: ${Math.ceil(player.shieldTime / 60)}s`, 10, 105);
+        ctx.font = "14px Arial";
+        ctx.fillText(`Shield: ${Math.ceil(player.shieldTime / 60)}s`, 10, 85);
       }
 
       if (gameState === "paused") {
@@ -538,10 +540,10 @@ const AsteroidDodger = ({ onClose }) => {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = "40px Arial";
+        ctx.font = "32px Arial";
         ctx.textAlign = "center";
         ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
-        ctx.font = "20px Arial";
+        ctx.font = "16px Arial";
         ctx.fillText(
           "Press SPACE to continue",
           canvas.width / 2,
@@ -587,24 +589,30 @@ const AsteroidDodger = ({ onClose }) => {
 
     const resizeCanvas = () => {
       const container = canvas.parentElement;
-      const containerWidth = container.clientWidth - 40;
-      const containerHeight = window.innerHeight - 150;
+      const containerWidth = container.clientWidth - 20;
+      const containerHeight = window.innerHeight - 100;
 
-      // Set canvas to a good native resolution
-      const baseWidth = 1000;
-      const baseHeight = 700;
+      // Make canvas much larger - use almost full screen
+      const baseWidth = Math.min(1800, containerWidth);
+      const baseHeight = Math.min(1200, containerHeight);
 
-      // Scale down if needed to fit screen
-      const scaleX = containerWidth / baseWidth;
-      const scaleY = containerHeight / baseHeight;
-      const scale = Math.min(scaleX, scaleY, 1); // Don't scale up, only down
+      // Maintain aspect ratio
+      const aspectRatio = 16 / 10;
+      let width = baseWidth;
+      let height = width / aspectRatio;
 
-      canvas.width = baseWidth * scale;
-      canvas.height = baseHeight * scale;
+      if (height > baseHeight) {
+        height = baseHeight;
+        width = height * aspectRatio;
+      }
 
-      // Set CSS size to match canvas size to prevent stretching/blurriness
-      canvas.style.width = canvas.width + "px";
-      canvas.style.height = canvas.height + "px";
+      // Set canvas resolution (this affects sharpness)
+      canvas.width = width;
+      canvas.height = height;
+
+      // Set CSS size to match exactly (prevents stretching/blurriness)
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
     };
 
     resizeCanvas();
@@ -626,16 +634,32 @@ const AsteroidDodger = ({ onClose }) => {
       gameLoopRef.current = null;
     }
 
-    // Reset all state
+    // Reset all state immediately
     setShowFact(null);
     setScore(0);
+    setGameState("menu"); // Go back to menu first
 
-    // Initialize and start game
+    // Clear all game objects immediately
+    gameObjects.current.asteroids = [];
+    gameObjects.current.powerUps = [];
+    gameObjects.current.particles = [];
+
+    // Reset player
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const player = gameObjects.current.player;
+      player.x = canvas.width / 2 - player.width / 2;
+      player.y = canvas.height - player.height - 20;
+      player.shield = false;
+      player.shieldTime = 0;
+    }
+
+    // Small delay then start new game
     setTimeout(() => {
       initGame();
       setGameState("playing");
       playSound("travel_start");
-    }, 100); // Small delay to ensure state is reset
+    }, 100);
   };
 
   return (
@@ -660,17 +684,17 @@ const AsteroidDodger = ({ onClose }) => {
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center space-y-6 md:space-y-8 max-w-4xl mx-auto px-4">
                 <div className="space-y-4">
-                  <h3 className="text-xl md:text-2xl text-white font-bold">
+                  <h3 className="text-lg md:text-xl text-white font-bold">
                     Navigate through the asteroid field!
                   </h3>
-                  <p className="text-base md:text-lg text-gray-300">
+                  <p className="text-sm md:text-base text-gray-300">
                     Use arrow keys, WASD, or touch/tap to move your spacecraft.
                     Avoid asteroids and collect power-ups!
                   </p>
                 </div>
 
                 <div className="space-y-6">
-                  <h4 className="text-lg md:text-xl text-white font-bold">
+                  <h4 className="text-base md:text-lg text-white font-bold">
                     Choose Difficulty:
                   </h4>
                   <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
@@ -682,10 +706,10 @@ const AsteroidDodger = ({ onClose }) => {
                           : "bg-slate-700 text-gray-300 hover:bg-slate-600"
                       }`}
                     >
-                      <div className="text-base md:text-lg font-bold">
+                      <div className="text-sm md:text-base font-bold">
                         Inner Solar System
                       </div>
-                      <div className="text-sm opacity-75">
+                      <div className="text-xs opacity-75">
                         Fewer, slower asteroids
                       </div>
                     </button>
@@ -697,17 +721,17 @@ const AsteroidDodger = ({ onClose }) => {
                           : "bg-slate-700 text-gray-300 hover:bg-slate-600"
                       }`}
                     >
-                      <div className="text-base md:text-lg font-bold">
+                      <div className="text-sm md:text-base font-bold">
                         Outer Solar System
                       </div>
-                      <div className="text-sm opacity-75">
+                      <div className="text-xs opacity-75">
                         More, faster asteroids
                       </div>
                     </button>
                   </div>
                 </div>
 
-                <div className="space-y-3 text-sm md:text-base text-gray-400">
+                <div className="space-y-2 text-xs md:text-sm text-gray-400">
                   <p>🛡️ Shield Power-up: Protects you from one asteroid hit</p>
                   <p>⏰ Slow-Mo Power-up: Slows down asteroids temporarily</p>
                   <p>Press SPACE to pause during gameplay</p>
@@ -715,13 +739,13 @@ const AsteroidDodger = ({ onClose }) => {
 
                 <button
                   onClick={startGame}
-                  className="px-8 md:px-10 py-3 md:py-4 bg-green-600 hover:bg-green-700 text-white rounded-lg text-lg md:text-xl font-bold transition-colors"
+                  className="px-6 md:px-8 py-2 md:py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg text-base md:text-lg font-bold transition-colors"
                 >
                   🚀 Start Game
                 </button>
 
                 {highScore > 0 && (
-                  <p className="text-yellow-400 text-base md:text-lg font-bold">
+                  <p className="text-yellow-400 text-sm md:text-base font-bold">
                     🏆 High Score: {highScore}
                   </p>
                 )}
@@ -730,13 +754,13 @@ const AsteroidDodger = ({ onClose }) => {
           )}
 
           {(gameState === "playing" || gameState === "paused") && (
-            <div className="flex-1 flex flex-col items-center justify-center p-4">
+            <div className="flex-1 flex flex-col items-center justify-center p-2">
               <canvas
                 ref={canvasRef}
                 className="border border-slate-600 rounded-lg shadow-2xl"
               />
-              <div className="mt-4 text-center text-gray-300">
-                <p className="text-sm md:text-base">
+              <div className="mt-2 text-center text-gray-300">
+                <p className="text-xs md:text-sm">
                   Use Arrow Keys, WASD, or Touch to move • Press SPACE to pause
                 </p>
               </div>
@@ -746,15 +770,15 @@ const AsteroidDodger = ({ onClose }) => {
           {gameState === "gameOver" && (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center space-y-6 md:space-y-8 max-w-2xl mx-auto px-4">
-                <h3 className="text-2xl md:text-3xl text-red-400 font-bold">
+                <h3 className="text-xl md:text-2xl text-red-400 font-bold">
                   Game Over!
                 </h3>
-                <p className="text-xl md:text-2xl text-white font-bold">
+                <p className="text-lg md:text-xl text-white font-bold">
                   Final Score: {score}
                 </p>
 
                 {score === highScore && score > 0 && (
-                  <p className="text-yellow-400 text-lg md:text-xl font-bold">
+                  <p className="text-yellow-400 text-base md:text-lg font-bold">
                     🎉 New High Score!
                   </p>
                 )}
@@ -776,13 +800,21 @@ const AsteroidDodger = ({ onClose }) => {
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
                   <button
                     onClick={restartGame}
-                    className="px-8 md:px-10 py-3 md:py-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-lg md:text-xl font-bold"
+                    className="px-6 md:px-8 py-3 md:py-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-base md:text-lg font-bold"
                   >
                     🚀 Play Again
                   </button>
                   <button
-                    onClick={() => setGameState("menu")}
-                    className="px-8 md:px-10 py-3 md:py-4 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors text-lg md:text-xl font-bold"
+                    onClick={() => {
+                      // Cancel any existing game loop
+                      if (gameLoopRef.current) {
+                        cancelAnimationFrame(gameLoopRef.current);
+                        gameLoopRef.current = null;
+                      }
+                      setGameState("menu");
+                      setShowFact(null);
+                    }}
+                    className="px-6 md:px-8 py-3 md:py-4 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors text-base md:text-lg font-bold"
                   >
                     📋 Main Menu
                   </button>
