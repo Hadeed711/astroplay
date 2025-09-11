@@ -496,9 +496,9 @@ const AsteroidDodger = ({ onClose }) => {
 
         // Draw symbol
         ctx.fillStyle = "#ffffff";
-        ctx.font = "10px Arial";
+        ctx.font = "8px Arial";
         ctx.textAlign = "center";
-        ctx.fillText(powerUp.type === "shield" ? "🛡️" : "⏰", 0, 3);
+        ctx.fillText(powerUp.type === "shield" ? "🛡️" : "⏰", 0, 2);
 
         ctx.restore();
       });
@@ -514,25 +514,25 @@ const AsteroidDodger = ({ onClose }) => {
         ctx.fillRect(particle.x, particle.y, 2, 2);
       });
 
-      // Draw UI with smaller text
+      // Draw UI with much smaller text
       ctx.fillStyle = "#ffffff";
-      ctx.font = "16px Arial";
+      ctx.font = "12px Arial";
       ctx.textAlign = "left";
-      ctx.fillText(`Score: ${score}`, 10, 25);
-      ctx.fillText(`High Score: ${highScore}`, 10, 45);
-      ctx.font = "14px Arial";
+      ctx.fillText(`Score: ${score}`, 10, 18);
+      ctx.fillText(`High Score: ${highScore}`, 10, 32);
+      ctx.font = "10px Arial";
       ctx.fillText(
         `Difficulty: ${
           difficulty === "inner" ? "Inner Solar System" : "Outer Solar System"
         }`,
         10,
-        65
+        46
       );
 
       if (player.shield) {
         ctx.fillStyle = "#00ff00";
-        ctx.font = "14px Arial";
-        ctx.fillText(`Shield: ${Math.ceil(player.shieldTime / 60)}s`, 10, 85);
+        ctx.font = "10px Arial";
+        ctx.fillText(`Shield: ${Math.ceil(player.shieldTime / 60)}s`, 10, 60);
       }
 
       if (gameState === "paused") {
@@ -540,14 +540,14 @@ const AsteroidDodger = ({ onClose }) => {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = "32px Arial";
+        ctx.font = "28px Arial";
         ctx.textAlign = "center";
         ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
-        ctx.font = "16px Arial";
+        ctx.font = "14px Arial";
         ctx.fillText(
           "Press SPACE to continue",
           canvas.width / 2,
-          canvas.height / 2 + 40
+          canvas.height / 2 + 35
         );
       }
     }
@@ -589,14 +589,14 @@ const AsteroidDodger = ({ onClose }) => {
 
     const resizeCanvas = () => {
       const container = canvas.parentElement;
-      const containerWidth = container.clientWidth - 20;
-      const containerHeight = window.innerHeight - 100;
+      const containerWidth = container.clientWidth - 10;
+      const containerHeight = window.innerHeight - 80;
 
-      // Make canvas much larger - use almost full screen
-      const baseWidth = Math.min(1800, containerWidth);
-      const baseHeight = Math.min(1200, containerHeight);
+      // Make canvas cover almost the entire screen
+      const baseWidth = Math.min(2400, containerWidth);
+      const baseHeight = Math.min(1600, containerHeight);
 
-      // Maintain aspect ratio
+      // Maintain aspect ratio but prioritize screen coverage
       const aspectRatio = 16 / 10;
       let width = baseWidth;
       let height = width / aspectRatio;
@@ -605,6 +605,10 @@ const AsteroidDodger = ({ onClose }) => {
         height = baseHeight;
         width = height * aspectRatio;
       }
+
+      // Ensure minimum size for playability
+      width = Math.max(width, 800);
+      height = Math.max(height, 500);
 
       // Set canvas resolution (this affects sharpness)
       canvas.width = width;
@@ -663,7 +667,7 @@ const AsteroidDodger = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black z-50 flex flex-col">
+    <div className="fixed top-16 left-0 right-0 bottom-0 bg-black z-40 flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center p-4 bg-slate-900/95 backdrop-blur-sm border-b border-blue-500/30">
         <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
@@ -754,13 +758,13 @@ const AsteroidDodger = ({ onClose }) => {
           )}
 
           {(gameState === "playing" || gameState === "paused") && (
-            <div className="flex-1 flex flex-col items-center justify-center p-2">
+            <div className="flex-1 flex flex-col items-center justify-center p-1">
               <canvas
                 ref={canvasRef}
-                className="border border-slate-600 rounded-lg shadow-2xl"
+                className="border border-slate-600 rounded-lg shadow-2xl max-w-full max-h-full"
               />
-              <div className="mt-2 text-center text-gray-300">
-                <p className="text-xs md:text-sm">
+              <div className="mt-1 text-center text-gray-300">
+                <p className="text-xs">
                   Use Arrow Keys, WASD, or Touch to move • Press SPACE to pause
                 </p>
               </div>
