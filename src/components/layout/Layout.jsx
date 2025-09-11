@@ -2,6 +2,7 @@ import Navigation from './Navigation'
 import Footer from './Footer'
 import InteractiveBackground from '../ui/InteractiveBackground'
 import { AudioControls } from '../audio/AudioSystem'
+import GameControls from '../games/GameControls'
 import { TouchUI } from '../mobile/TouchControls'
 import { useResponsive } from '../responsive/ResponsiveLayout'
 import useAppStore from '../../store/useAppStore'
@@ -45,6 +46,11 @@ const Layout = ({ children }) => {
           {/* Audio Controls */}
           <div className="fixed top-16 md:top-20 right-2 md:right-4 z-40">
             <AudioControls />
+          </div>
+          
+          {/* Game Controls */}
+          <div className="fixed top-28 md:top-32 right-2 md:right-4 z-40">
+            <GameControls />
           </div>
           
           {/* Mobile Touch Controls */}
