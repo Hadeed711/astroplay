@@ -163,9 +163,14 @@ const AsteroidDodger = ({ onClose }) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const isMobile = window.innerWidth < 768;
     const size = Math.random() * 30 + 20;
     const speed =
       difficulty === "inner" ? Math.random() * 3 + 2 : Math.random() * 5 + 3;
+
+    // Limit asteroids on mobile for better performance
+    const maxAsteroids = isMobile ? 8 : 15;
+    if (gameObjects.current.asteroids.length >= maxAsteroids) return;
 
     gameObjects.current.asteroids.push({
       x: Math.random() * (canvas.width - size),
@@ -199,14 +204,17 @@ const AsteroidDodger = ({ onClose }) => {
 
   // Create particle effect
   const createParticles = useCallback((x, y, color = "#ffaa00") => {
-    for (let i = 0; i < 8; i++) {
+    const isMobile = window.innerWidth < 768;
+    const particleCount = isMobile ? 4 : 8; // Fewer particles on mobile
+
+    for (let i = 0; i < particleCount; i++) {
       gameObjects.current.particles.push({
         x: x,
         y: y,
         vx: (Math.random() - 0.5) * 10,
         vy: (Math.random() - 0.5) * 10,
-        life: 30,
-        maxLife: 30,
+        life: isMobile ? 20 : 30, // Shorter life on mobile
+        maxLife: isMobile ? 20 : 30,
         color: color,
       });
     }
@@ -360,13 +368,23 @@ const AsteroidDodger = ({ onClose }) => {
       }
     });
 
-    // Spawn new asteroids
-    if (Math.random() < (difficulty === "inner" ? 0.02 : 0.04)) {
+    // Spawn new asteroids (reduced frequency on mobile)
+    const isMobile = window.innerWidth < 768;
+    const asteroidSpawnRate = isMobile
+      ? difficulty === "inner"
+        ? 0.015
+        : 0.025
+      : difficulty === "inner"
+      ? 0.02
+      : 0.04;
+
+    if (Math.random() < asteroidSpawnRate) {
       spawnAsteroid();
     }
 
-    // Spawn power-ups occasionally
-    if (Math.random() < 0.005) {
+    // Spawn power-ups occasionally (less frequent on mobile)
+    const powerUpSpawnRate = isMobile ? 0.003 : 0.005;
+    if (Math.random() < powerUpSpawnRate) {
       spawnPowerUp();
     }
   }, [
@@ -591,10 +609,19 @@ const AsteroidDodger = ({ onClose }) => {
       const container = canvas.parentElement;
       const containerWidth = container.clientWidth - 10;
       const containerHeight = window.innerHeight - 80;
+      const isMobile = window.innerWidth < 768;
 
-      // Make canvas cover almost the entire screen
-      const baseWidth = Math.min(2400, containerWidth);
-      const baseHeight = Math.min(1600, containerHeight);
+      // Optimize canvas size for mobile performance
+      let baseWidth, baseHeight;
+      if (isMobile) {
+        // Smaller canvas for mobile to improve performance
+        baseWidth = Math.min(1200, containerWidth);
+        baseHeight = Math.min(800, containerHeight - 120); // Extra space for mobile controls
+      } else {
+        // Full size for desktop
+        baseWidth = Math.min(2400, containerWidth);
+        baseHeight = Math.min(1600, containerHeight);
+      }
 
       // Maintain aspect ratio but prioritize screen coverage
       const aspectRatio = 16 / 10;
@@ -607,8 +634,13 @@ const AsteroidDodger = ({ onClose }) => {
       }
 
       // Ensure minimum size for playability
-      width = Math.max(width, 800);
-      height = Math.max(height, 500);
+      if (isMobile) {
+        width = Math.max(width, 600);
+        height = Math.max(height, 375);
+      } else {
+        width = Math.max(width, 800);
+        height = Math.max(height, 500);
+      }
 
       // Set canvas resolution (this affects sharpness)
       canvas.width = width;
@@ -764,9 +796,79 @@ const AsteroidDodger = ({ onClose }) => {
                 className="border border-slate-600 rounded-lg shadow-2xl max-w-full max-h-full"
               />
               <div className="mt-1 text-center text-gray-300">
-                <p className="text-xs">
+                <p className="text-xs hidden md:block">
                   Use Arrow Keys, WASD, or Touch to move • Press SPACE to pause
                 </p>
+                <p className="text-xs md:hidden">
+                  Use controls below to move • Tap pause to pause
+                </p>
+              </div>
+
+              {/* Mobile Controls */}
+              <div className="md:hidden mt-2 flex flex-col items-center space-y-2">
+                <div className="flex items-center space-x-4">
+                  {/* Up Button */}
+                  <button
+                    onTouchStart={() => (keysRef.current["ArrowUp"] = true)}
+                    onTouchEnd={() => (keysRef.current["ArrowUp"] = false)}
+                    onMouseDown={() => (keysRef.current["ArrowUp"] = true)}
+                    onMouseUp={() => (keysRef.current["ArrowUp"] = false)}
+                    onMouseLeave={() => (keysRef.current["ArrowUp"] = false)}
+                    className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg p-3 text-xl font-bold select-none touch-manipulation"
+                  >
+                    ↑
+                  </button>
+                </div>
+                <div className="flex items-center space-x-4">
+                  {/* Left Button */}
+                  <button
+                    onTouchStart={() => (keysRef.current["ArrowLeft"] = true)}
+                    onTouchEnd={() => (keysRef.current["ArrowLeft"] = false)}
+                    onMouseDown={() => (keysRef.current["ArrowLeft"] = true)}
+                    onMouseUp={() => (keysRef.current["ArrowLeft"] = false)}
+                    onMouseLeave={() => (keysRef.current["ArrowLeft"] = false)}
+                    className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg p-3 text-xl font-bold select-none touch-manipulation"
+                  >
+                    ←
+                  </button>
+                  {/* Pause Button */}
+                  <button
+                    onClick={() => {
+                      if (gameState === "playing") {
+                        setGameState("paused");
+                      } else if (gameState === "paused") {
+                        setGameState("playing");
+                      }
+                    }}
+                    className="bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800 text-white rounded-lg p-3 text-sm font-bold select-none touch-manipulation"
+                  >
+                    {gameState === "paused" ? "▶️" : "⏸️"}
+                  </button>
+                  {/* Right Button */}
+                  <button
+                    onTouchStart={() => (keysRef.current["ArrowRight"] = true)}
+                    onTouchEnd={() => (keysRef.current["ArrowRight"] = false)}
+                    onMouseDown={() => (keysRef.current["ArrowRight"] = true)}
+                    onMouseUp={() => (keysRef.current["ArrowRight"] = false)}
+                    onMouseLeave={() => (keysRef.current["ArrowRight"] = false)}
+                    className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg p-3 text-xl font-bold select-none touch-manipulation"
+                  >
+                    →
+                  </button>
+                </div>
+                <div className="flex items-center space-x-4">
+                  {/* Down Button */}
+                  <button
+                    onTouchStart={() => (keysRef.current["ArrowDown"] = true)}
+                    onTouchEnd={() => (keysRef.current["ArrowDown"] = false)}
+                    onMouseDown={() => (keysRef.current["ArrowDown"] = true)}
+                    onMouseUp={() => (keysRef.current["ArrowDown"] = false)}
+                    onMouseLeave={() => (keysRef.current["ArrowDown"] = false)}
+                    className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg p-3 text-xl font-bold select-none touch-manipulation"
+                  >
+                    ↓
+                  </button>
+                </div>
               </div>
             </div>
           )}
